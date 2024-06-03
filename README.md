@@ -57,7 +57,7 @@ Se si desiderano avere maggiori informazioni sulla struttura del database, è po
 Esegui lo script principale usando Python:
 ```bat
     python main_script.py
-    ```
+```
 
 ## Funzionalità:
 Registrazione Utente
