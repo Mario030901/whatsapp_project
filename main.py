@@ -214,7 +214,7 @@ def main():
                 password = simpledialog.askstring("Accedi", "Inserisci la tua password:", parent=root)
                 if username and password and login(username, password):
                     while True:
-                        sub_scelta = simpledialog.askstring("Azioni disponibili", "1. Logout\n2. Invia Messaggio\n3. Visualizza Messaggi\n4. Gestisci Rubrica\n5. Modalità Silenziosa On/Off\n6. Chat a Tempo", parent=root)
+                        sub_scelta = simpledialog.askstring("Azioni disponibili", "1. Logout\n2. Invia Messaggio\n3. Visualizza Messaggi\n4. Gestisci Rubrica\n5. Modalità Silenziosa On/Off", parent=root)
                         if sub_scelta is None:
                             break
                         if sub_scelta == "1":
@@ -229,8 +229,6 @@ def main():
                         elif sub_scelta == "5":
                             mode = int(r.hget(f'user:{username}', 'voted'))
                             silent_mode(username, mode)
-                        elif sub_scelta == "6":
-                            pass
                         else:
                             messagebox.showinfo("Errore", "Scelta non valida, riprova.")
             elif scelta == "3":
