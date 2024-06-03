@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import simpledialog, messagebox
 from startdb import start
 from silent_mode import stampa_notifica
-from datetime import datetime
+from datetime import datetime, time
+import threading
 
 # Configurazione di Redis
 r = start()
@@ -106,26 +107,6 @@ def gestisci_rubrica(username):
         else:
             messagebox.showinfo("Errore", "Scelta non valida, riprova.")
 
-# Funzione per avviare una chat a tempo con un contatto
-def avvia_chat_tempo(username):
-    root = tk.Tk()
-    root.withdraw()
-    rubrica_key = f'rubrica:{username}'
-    contatti = r.smembers(rubrica_key)
-    if not contatti:
-        messagebox.showinfo("Errore", "Rubrica vuota. Aggiungi un contatto prima di avviare una chat a tempo.")
-        return
-
-    contatto = simpledialog.askstring("Avvia Chat a Tempo", f"Scegli il contatto:\n{list(contatti)}", parent=root)
-    if contatto:
-        mode = int(r.hget(f'user:{contatto}', 'voted'))
-        if mode:
-            messagebox.showinfo("Errore", "Il contatto non vuole essere disturbato.")
-            return
-        chat_key = f'chat_tempo:{username}:{contatto}'
-        r.set(chat_key, 'active')
-        messagebox.showinfo("Successo", f"Chat a tempo con {contatto} avviata.")
-
 # Funzione per inviare un messaggio
 def send_message(username):
     rubrica_key = f'rubrica:{username}'
@@ -191,7 +172,7 @@ def get_messages(username):
             message_text = message_data.get('message', 'Messaggio non disponibile')
             messaggi.append((timestamp, sender, message_text))
     
-    messaggi.sort(key=lambda x: x[0])  # Ordinamento per timestamp
+    messaggi.sort(key=lambda x: x[0], reverse=True)  # Ordinamento per timestamp
     messaggi_str = "\n\n".join([f"User: {msg[1]}\nMessage: {msg[2]}\nDate: {msg[0]}" for msg in messaggi])
     
     if messaggi:
@@ -202,18 +183,6 @@ def get_messages(username):
     else:
         messagebox.showinfo("Messaggi", "Nessun messaggio trovato")
 
-
-def ricezione_messaggio(user_hash):
-    # Codice per la ricezione dei messaggi in tempo reale 
-    pubsub = r.pubsub()
-    pubsub.subscribe(f'chat:{user_hash}:*', f'chat:*:{user_hash}')
-    for message in pubsub.listen():
-        if message['type'] == 'message':
-            channel = message['channel'].decode('utf-8')
-            _, sender_hash, recipient_hash = channel.split(':')
-            if sender_hash == user_hash:
-                sender_hash, recipient_hash = recipient_hash, sender_hash
-            stampa_notifica(sender_hash, recipient_hash, message['data'].decode('utf-8'))
 
 # Funzione per gestire la chiusura della finestra principale
 def on_closing():
@@ -263,7 +232,7 @@ def main():
                             mode = int(r.hget(f'user:{username}', 'voted'))
                             silent_mode(username, mode)
                         elif sub_scelta == "6":
-                            avvia_chat_tempo(username)
+                            pass
                         else:
                             messagebox.showinfo("Errore", "Scelta non valida, riprova.")
             elif scelta == "3":
