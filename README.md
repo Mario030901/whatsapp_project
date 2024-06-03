@@ -30,10 +30,13 @@ Questo progetto è una semplice applicazione di chat implementata utilizzando tk
 
 ## Prerequisiti
 
-Python 3.x
-Server Redis
-Pacchetti Python richiesti: 
-tkinter, redis, datetime
+- Python 3.12.3
+- Server Redis
+
+## Librerie Python 
+- redis
+- tkinter
+- datetime
 
 
 ## Installazione:
@@ -52,7 +55,9 @@ Se si desiderano avere maggiori informazioni sulla struttura del database, è po
 ## Utilizzo:
 
 Esegui lo script principale usando Python:
-python main_script.py
+```bat
+    python main_script.py
+    ```
 
 ## Funzionalità:
 Registrazione Utente
