@@ -1,8 +1,8 @@
 import redis
 from builtins import print
 from startdb import start
-from silent_mode import *
-from silent_mode import *
+from test.silent_mode import *
+from test.silent_mode import *
 
 r = start()
 
