@@ -1,9 +1,7 @@
 import tkinter as tk
 from tkinter import simpledialog, messagebox
 from startdb import start
-from silent_mode import stampa_notifica
 from datetime import datetime, time
-import threading
 
 # Configurazione di Redis
 r = start()
@@ -11,7 +9,7 @@ r = start()
 # Funzione di registrazione
 def registrazione(nome_utente, password):
     if r.hexists('users', nome_utente):
-        messagebox.showinfo("Errore", "User already exists")
+        messagebox.showinfo("Errore", "L'utente esiste già.")
         return False
     user_key = f'user:{nome_utente}'
     r.hset(user_key, 'password', password)
@@ -24,14 +22,14 @@ def registrazione(nome_utente, password):
 def login(username, password):
     user_key = f'user:{username}'
     if not r.exists(user_key):
-        messagebox.showinfo("Errore", "Invalid credentials")
+        messagebox.showinfo("Errore", "Credenziali non valide, riprovare")
         return False
     stored_password = r.hget(user_key, 'password')
     if stored_password != password:
-        messagebox.showinfo("Errore", "Invalid credentials")
+        messagebox.showinfo("Errore", "Credenziali non valide, riprovare")
         return False
     r.set(f'user_session:{username}', 'logged_in')
-    messagebox.showinfo("Successo", "Login successful")
+    messagebox.showinfo("Successo", "Login avvenuto con successo")
     return True
 def silent_mode(username, mode):
     if not mode:
@@ -52,7 +50,7 @@ def silent_mode(username, mode):
 # Funzione di logout
 def logout(username):
     r.delete(f'user_session:{username}')
-    messagebox.showinfo("Successo", "Logout successful")
+    messagebox.showinfo("Successo", "Logout avvenuto con successo")
 
 # Funzione per aggiungere un contatto
 def aggiungi_contatto(username, contatto):
@@ -96,7 +94,7 @@ def gestisci_rubrica(username):
                     aggiungi_contatto(username, contatto)
                     messagebox.showinfo("Successo", "Contatto aggiunto con successo.")
                 except KeyError:
-                    messagebox.showinfo("Errore", "Scelta non valida, riprova.")
+                    messagebox.showinfo("Errore", "Scelta non valida, riprovare.")
             else:
                 messagebox.showinfo("Nessun contatto", "La ricerca non ha restituito alcun contatto")
 
@@ -239,7 +237,7 @@ def main():
                 messagebox.showinfo("Arrivederci!", "Arrivederci!")
                 break
             else:
-                messagebox.showinfo("Errore", "Scelta non valida, riprova.")
+                messagebox.showinfo("Errore", "Scelta non valida, riprovare.")
         except tk.TclError:
             break
 
